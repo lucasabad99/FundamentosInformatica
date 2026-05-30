@@ -1,0 +1,14 @@
+PLANTEO DEL EJERCICIO:
+Se requiere plantear un programa para un cajero automatico donde primero se INGRESEN los billetes a utilizar en el banco, el cual se finaliza con -1. 
+Luego se ingresan los montos requeridos que deben ser entregados en los billetes designados anteriormente de la manera mas eficiente posible. 
+En el caso que no sea posible entregar tal monto con la cantidad de billetes adecuados, se debe informar la falta de billetes para conformar el monto.
+
+Se necesita:
+- Una lista con los billetes disponibles 
+- Un while para finalizar con -1 
+- Ordenar de mayor a menor la cantidad de billetes que se utilizan para completar el monto
+- primero ingreso los billetes y valido si son negativos y 0 
+- minimo 10 maximo billetes 20000
+- validar que no se repita el billetes 
+- elegir cantridad total de billees (8 o 10)
+- funciones para validaciones y listas
