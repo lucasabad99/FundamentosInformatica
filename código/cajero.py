@@ -12,13 +12,7 @@ def billete_en_rango(billete):
     # Devuelve 1 si el billete esta dentro del rango permitido.
     valido = 1
     if billete < BILLETE_MINIMO or billete > BILLETE_MAXIMO:
-        print("Error: el billete $", end="")
-        print(billete, end="")
-        print(" no es valido. Debe estar entre $", end="")
-        print(BILLETE_MINIMO, end="")
-        print(" y $", end="")
-        print(BILLETE_MAXIMO, end="")
-        print(".")
+        print("Error: el billete $",billete, "no es valido. Debe estar entre $",BILLETE_MINIMO, " y $",BILLETE_MAXIMO)
         valido = 0
     return valido
 
@@ -29,9 +23,7 @@ def billete_repetido(billete, lista_billetes):
     i = 0
     while i < len(lista_billetes) and repetido == 0:
         if lista_billetes[i] == billete:
-            print("Error: el billete $", end="")
-            print(billete, end="")
-            print(" ya fue ingresado.")
+            print("Error: el billete $", billete, "ya fue ingresado.")
             repetido = 1
         i = i + 1
     return repetido
@@ -41,9 +33,7 @@ def lista_llena(lista_billetes):
     # Controla que no se superen la cantidad maxima de billetes.
     llena = 0
     if len(lista_billetes) >= MAXIMO_BILLETES:
-        print("Error: ya se ingresaron el maximo de ", end="")
-        print(MAXIMO_BILLETES, end="")
-        print(" billetes.")
+        print("Error: ya se ingresaron el maximo de", MAXIMO_BILLETES, "billetes.")
         llena = 1
     return llena
 
@@ -52,9 +42,7 @@ def lista_vacia(lista_billetes):
     # Verifica si todavia no se cargo ningun billete.
     vacia = 0
     if len(lista_billetes) < MINIMO_BILLETES:
-        print("Error: debe ingresar al menos ", end="")
-        print(MINIMO_BILLETES, end="")
-        print(" billetes.")
+        print("Error: debe ingresar al menos", MINIMO_BILLETES, "billetes.")
         vacia = 1
     return vacia
 
@@ -88,10 +76,7 @@ def cargar_billetes():
         else:
             # Solo los billetes validos llegan a la lista final.
             lista_billetes.append(entrada)
-            print("Billete $", end="")
-            print(entrada, end="")
-            print(" agregado. Total ingresados: ", end="")
-            print(len(lista_billetes))
+            print("Billete $", entrada, "agregado. Total ingresados:", len(lista_billetes))
             entrada = int(input("Billete: "))
     return lista_billetes
 
@@ -234,9 +219,7 @@ while monto != -1:
     if monto_valido(monto) == 1:
         resultado = calcular_billetes_para_monto(monto, billetes_ordenados)
         if len(resultado) == 0:
-            print("Error: no es posible entregar $", end="")
-            print(monto, end="")
-            print(" con los billetes disponibles.")
+            print("Error: no es posible entregar $", monto, "con los billetes disponibles.")
         else:
             mostrar_resultado_monto(monto, resultado)
             # Guardamos una copia para no depender de cambios posteriores.
