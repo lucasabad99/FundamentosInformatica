@@ -1,36 +1,86 @@
-# TRABAJO PRÁCTICO - GRUPO 05
-# CAJERO AUTOMÁTICO
+# 🏧 Cajero Automático — Trabajo Práctico Grupo 05
+
+Simulación de un cajero automático desarrollada en Python como trabajo práctico universitario. El programa permite configurar los billetes disponibles, calcular la cantidad mínima de billetes para entregar un monto solicitado, y mostrar un resumen final de todas las operaciones realizadas.
 
 ---
 
-# DESCRIPCIÓN GENERAL
+## 📋 Tabla de contenidos
 
-El programa simula el funcionamiento de un cajero automático.
-
-Permite:
-
-- Ingresar las denominaciones de billetes disponibles.
-- Validar que los billetes sean correctos.
-- Ordenar los billetes de mayor a menor.
-- Solicitar montos a entregar.
-- Calcular la menor cantidad posible de billetes para cada monto.
-- Informar error cuando un monto no puede entregarse exactamente.
-- Guardar todas las operaciones realizadas.
-- Mostrar un resumen final ordenado de mayor a menor según el monto.
+- [Descripción del problema](#descripción-del-problema)
+- [Funcionalidades](#funcionalidades)
+- [Estructura del código](#estructura-del-código)
+- [Constantes](#constantes)
+- [Funciones](#funciones)
+- [Programa principal](#programa-principal)
+- [Algoritmos utilizados](#algoritmos-utilizados)
+- [Ejemplos de uso](#ejemplos-de-uso)
+- [Restricciones y validaciones](#restricciones-y-validaciones)
+- [Consideraciones de diseño](#consideraciones-de-diseño)
 
 ---
 
-# ESTRUCTURA GENERAL DEL PROGRAMA
+## Descripción del problema
 
-El programa está dividido en tres partes:
+Un banco necesita un programa para sus cajeros automáticos que lea una cantidad de dinero e imprima a cuántos billetes equivale, minimizando la cantidad de billetes entregados.
 
-1. Constantes.
-2. Funciones.
-3. Programa principal.
+El programa fue diseñado para ser adaptable a distintas monedas (modelo de exportación), por lo que los valores de los billetes no están fijos en el código sino que se ingresan al inicio de cada ejecución.
+
+El flujo general es:
+
+1. El operador ingresa uno a uno los valores de billetes disponibles (en cualquier orden), finalizando con `-1`.
+2. El programa solicita montos a entregar de forma repetida hasta que se ingresa `-1`.
+3. Al finalizar, se muestra un resumen de todas las operaciones ordenado de mayor a menor según el monto entregado.
 
 ---
 
-# 1. CONSTANTES
+## Funcionalidades
+
+- Carga de billetes disponibles con validación de rango, duplicados y cantidad máxima.
+- Ordenamiento automático de billetes de mayor a menor.
+- Cálculo de la combinación óptima (mínima cantidad de billetes) para cualquier monto.
+- Detección y reporte de montos que no pueden entregarse exactamente.
+- Registro de todas las operaciones exitosas.
+- Resumen final ordenado de mayor a menor por monto.
+
+---
+
+## Estructura del código
+
+```
+cajero.py
+│
+├── CONSTANTES
+│   ├── BILLETE_MINIMO
+│   ├── BILLETE_MAXIMO
+│   ├── MINIMO_BILLETES
+│   └── MAXIMO_BILLETES
+│
+├── FUNCIONES DE VALIDACIÓN
+│   ├── billete_en_rango()
+│   ├── billete_repetido()
+│   ├── lista_llena()
+│   ├── lista_vacia()
+│   └── monto_valido()
+│
+├── FUNCIONES DE CARGA Y ORDENAMIENTO
+│   ├── cargar_billetes()
+│   ├── ordenar_mayor_a_menor()
+│   └── ordenar_operaciones_mayor_a_menor()
+│
+├── FUNCIÓN PRINCIPAL DE CÁLCULO
+│   └── calcular_billetes_para_monto()
+│
+├── FUNCIONES DE VISUALIZACIÓN
+│   ├── mostrar_billetes()
+│   ├── mostrar_resultado_monto()
+│   └── mostrar_resumen_operaciones()
+│
+└── PROGRAMA PRINCIPAL
+```
+
+---
+
+## Constantes
 
 ```python
 BILLETE_MINIMO = 10
@@ -39,838 +89,316 @@ MINIMO_BILLETES = 1
 MAXIMO_BILLETES = 10
 ```
 
-## ¿Para qué sirven?
+Las constantes centralizan los parámetros configurables del sistema. En lugar de escribir valores literales en distintas partes del código ("números mágicos"), se usan nombres descriptivos. Si se necesita ajustar algún límite, solo se modifica una línea.
 
-Evitan escribir números "mágicos" en todo el programa.
-
-Por ejemplo:
-
-```python
-if billete < BILLETE_MINIMO
-```
-
-es más claro que:
-
-```python
-if billete < 10
-```
-
-Además, si cambia el valor mínimo permitido, solo se modifica una línea.
+| Constante        | Valor | Significado                                      |
+|------------------|-------|--------------------------------------------------|
+| `BILLETE_MINIMO` | 10    | Valor mínimo aceptado para un billete            |
+| `BILLETE_MAXIMO` | 20000 | Valor máximo aceptado para un billete            |
+| `MINIMO_BILLETES`| 1     | Cantidad mínima de billetes que debe haber       |
+| `MAXIMO_BILLETES`| 10    | Cantidad máxima de billetes distintos permitidos |
 
 ---
 
-# 2. FUNCIÓN billete_en_rango()
+## Funciones
+
+### `billete_en_rango(billete)`
+
+Verifica que el billete ingresado esté dentro del rango permitido por las constantes.
+
+- **Parámetro:** `billete` — valor entero ingresado por el usuario.
+- **Retorna:** `1` si el billete es válido, `0` si está fuera de rango.
 
 ```python
-def billete_en_rango(billete):
-```
-
-## ¿Qué hace?
-
-Verifica que el billete ingresado esté entre los límites permitidos.
-
-Ejemplo:
-
-```python
-billete_en_rango(500)
-```
-
-Resultado:
-
-```python
-1
-```
-
-Ejemplo:
-
-```python
-billete_en_rango(50000)
-```
-
-Resultado:
-
-```python
-0
-```
-
----
-
-## Funcionamiento
-
-```python
-valido = 1
-```
-
-Se supone inicialmente que el billete es válido.
-
----
-
-```python
+# Lógica central
 if billete < BILLETE_MINIMO or billete > BILLETE_MAXIMO:
+    valido = 0
 ```
 
-Pregunta:
-
-- ¿Es menor que 10?
-- ¿Es mayor que 20000?
-
-Si alguna respuesta es sí:
-
-```python
-valido = 0
-```
+Se usa `or` porque alcanza con que una sola condición sea verdadera para que el billete sea inválido.
 
 ---
 
-```python
-return valido
-```
+### `billete_repetido(billete, lista_billetes)`
 
-Devuelve:
+Recorre la lista de billetes ya cargados para verificar que no se ingrese el mismo valor dos veces.
 
-- 1 → válido
-- 0 → inválido
+- **Parámetros:** `billete` — valor a verificar; `lista_billetes` — lista actual de billetes.
+- **Retorna:** `1` si el billete ya existe en la lista, `0` si no.
 
----
-
-# 3. FUNCIÓN billete_repetido()
-
-```python
-def billete_repetido(billete, lista_billetes):
-```
-
-## ¿Qué hace?
-
-Busca si un billete ya fue cargado anteriormente.
+La búsqueda se detiene en cuanto encuentra una coincidencia, evitando recorridos innecesarios.
 
 ---
 
-Ejemplo:
+### `lista_llena(lista_billetes)`
 
-```python
-lista_billetes = [100,200,500]
-```
+Controla que no se supere el máximo de billetes distintos permitidos (`MAXIMO_BILLETES`).
 
-Nuevo billete:
-
-```python
-200
-```
-
-Resultado:
-
-```python
-repetido = 1
-```
+- **Parámetro:** `lista_billetes` — lista actual.
+- **Retorna:** `1` si la lista está llena, `0` si aún tiene espacio.
 
 ---
 
-## Funcionamiento
+### `lista_vacia(lista_billetes)`
+
+Verifica que haya al menos un billete cargado antes de continuar.
+
+- **Parámetro:** `lista_billetes` — lista actual.
+- **Retorna:** `1` si la lista está vacía, `0` si tiene al menos un elemento.
+
+---
+
+### `monto_valido(monto)`
+
+Verifica que el monto ingresado sea mayor a cero.
+
+- **Parámetro:** `monto` — entero ingresado por el usuario.
+- **Retorna:** `1` si es válido, `0` si no lo es.
+
+---
+
+### `cargar_billetes()`
+
+Función interactiva que lee los billetes disponibles uno por uno hasta que el usuario ingresa `-1`.
+
+Aplica todas las validaciones en orden:
+
+1. No permite salir si la lista sigue vacía.
+2. Rechaza billetes cuando la lista ya está llena.
+3. Rechaza billetes fuera de rango.
+4. Rechaza billetes ya ingresados.
+5. Solo agrega el billete si pasa todas las validaciones.
+
+La condición del bucle es:
 
 ```python
+while entrada != -1 or len(lista_billetes) == 0:
+```
+
+Esto garantiza que el usuario no pueda terminar sin haber cargado al menos un billete: aunque escriba `-1`, si la lista está vacía, el ciclo continúa.
+
+- **Retorna:** lista con los billetes cargados.
+
+---
+
+### `ordenar_mayor_a_menor(lista)`
+
+Ordena una copia de la lista de billetes de mayor a menor usando el algoritmo Bubble Sort.
+
+- **Parámetro:** `lista` — lista de billetes a ordenar.
+- **Retorna:** nueva lista ordenada de mayor a menor (la original no se modifica).
+
+Trabaja sobre una copia para no alterar la lista original:
+
+```python
+copia = []
 i = 0
+while i < len(lista):
+    copia.append(lista[i])
+    i = i + 1
 ```
 
-Comienza en la primera posición.
+El ordenamiento de mayor a menor es clave para que luego el algoritmo voraz de `calcular_billetes_para_monto()` funcione correctamente.
 
 ---
 
-```python
-while i < len(lista_billetes)
-```
+### `ordenar_operaciones_mayor_a_menor(operaciones)`
 
-Recorre toda la lista.
+Ordena la lista de operaciones según el monto entregado, de mayor a menor.
 
----
+- **Parámetro:** `operaciones` — lista de pares `[monto, resultado]`.
+- **Retorna:** copia de la lista ordenada por `operacion[0]` (el monto).
 
-```python
-if lista_billetes[i] == billete
-```
-
-Pregunta:
-
-¿El billete actual es igual al que quiero ingresar?
+Usa el mismo algoritmo Bubble Sort que `ordenar_mayor_a_menor()`, comparando el primer elemento de cada operación.
 
 ---
 
-Si lo encuentra:
+### `calcular_billetes_para_monto(monto, billetes_ordenados)`
+
+Es la función más importante del programa. Calcula cuántos billetes de cada denominación se necesitan para entregar exactamente el monto solicitado, usando la menor cantidad posible de billetes.
+
+- **Parámetros:** `monto` — entero a entregar; `billetes_ordenados` — lista de billetes ya ordenada de mayor a menor.
+- **Retorna:** lista de pares `[billete, cantidad]` si el monto puede formarse exactamente, o lista vacía `[]` si no es posible.
+
+**Estrategia (algoritmo voraz / greedy):**
 
 ```python
-repetido = 1
+cantidad = resto // billete   # Máxima cantidad de este billete que cabe
+resto = resto % billete       # Lo que queda por cubrir
 ```
+
+Primero se usan los billetes más grandes, tomando la mayor cantidad posible de cada uno. Luego se continúa con los más pequeños hasta cubrir el monto o agotar las opciones.
+
+Si al finalizar el recorrido `resto != 0`, significa que quedó dinero que no puede representarse con los billetes disponibles, y se retorna una lista vacía para señalizar el error.
+
+**Ejemplo paso a paso con monto $2200 y billetes [500, 200, 100]:**
+
+| Billete | División entera        | Resto restante      |
+|---------|------------------------|---------------------|
+| $500    | 2200 // 500 = **4**    | 2200 % 500 = 200    |
+| $200    | 200 // 200 = **1**     | 200 % 200 = 0       |
+| $100    | (no se necesita)       | —                   |
+
+Resultado: `[[500, 4], [200, 1]]` → 5 billetes en total.
 
 ---
 
-# 4. FUNCIÓN cargar_billetes()
+### `mostrar_billetes(lista_billetes)`
 
-```python
-def cargar_billetes():
-```
-
-## ¿Qué hace?
-
-Permite ingresar los billetes disponibles.
+Imprime en pantalla los billetes disponibles en una sola línea separada por comas.
 
 ---
 
-Ejemplo:
+### `mostrar_resultado_monto(monto, resultado)`
 
-```text
-500
-200
-100
--1
+Imprime el detalle de billetes utilizados para un monto específico, mostrando billete, cantidad y subtotal.
+
+Ejemplo de salida:
+
 ```
-
-Resultado:
-
-```python
-[500,200,100]
-```
-
----
-
-## Funcionamiento
-
-```python
-lista_billetes = []
-```
-
-Se crea una lista vacía.
-
----
-
-```python
-entrada = int(input("Billete: "))
-```
-
-Lee un billete.
-
----
-
-```python
-while entrada != -1 or len(lista_billetes) == 0
-```
-
-Significa:
-
-Seguir mientras:
-
-- No se ingrese -1
-
-o
-
-- La lista siga vacía
-
----
-
-Esto obliga a ingresar al menos un billete.
-
----
-
-```python
-lista_billetes.append(entrada)
-```
-
-Agrega el billete al final de la lista.
-
----
-
-Ejemplo:
-
-Antes:
-
-```python
-[500]
-```
-
-Después:
-
-```python
-[500,200]
+Monto $2200:
+  $500 x 4 = $2000
+  $200 x 1 = $200
 ```
 
 ---
 
-# 5. FUNCIÓN ordenar_mayor_a_menor()
+### `mostrar_resumen_operaciones(operaciones)`
 
-```python
-def ordenar_mayor_a_menor(lista):
-```
-
-## ¿Qué hace?
-
-Ordena los billetes de mayor a menor.
+Muestra el resumen final de todas las operaciones exitosas, ordenadas de mayor a menor por monto. Si no hubo ninguna operación, lo informa.
 
 ---
 
-Ejemplo:
+## Programa principal
 
-Antes:
+El programa principal coordina el flujo general en tres etapas:
 
+**Etapa 1 — Configuración:**
 ```python
-[100,500,200]
+lista_billetes = cargar_billetes()
+billetes_ordenados = ordenar_mayor_a_menor(lista_billetes)
+mostrar_billetes(billetes_ordenados)
 ```
 
-Después:
-
+**Etapa 2 — Operaciones:**
 ```python
-[500,200,100]
+while monto != -1:
+    if monto_valido(monto) == 1:
+        resultado = calcular_billetes_para_monto(monto, billetes_ordenados)
+        if len(resultado) == 0:
+            # Error: monto no puede entregarse
+        else:
+            mostrar_resultado_monto(monto, resultado)
+            operaciones.append([monto, copia_resultado])
 ```
 
----
+Se guarda una copia del resultado en cada operación para que modificaciones futuras en la lista no afecten el historial.
 
-## Método utilizado
-
-Bubble Sort (Método Burbuja).
-
----
-
-## Funcionamiento
-
+**Etapa 3 — Resumen:**
 ```python
-if copia[j] < copia[j+1]
-```
-
-Pregunta:
-
-¿El elemento de la izquierda es menor?
-
----
-
-Si sí:
-
-```python
-aux = copia[j]
-copia[j] = copia[j+1]
-copia[j+1] = aux
-```
-
-Intercambia posiciones.
-
----
-
-# 6. FUNCIÓN calcular_billetes_para_monto()
-
-```python
-def calcular_billetes_para_monto(...)
-```
-
-## Es la función más importante.
-
-Su objetivo es minimizar la cantidad de billetes entregados.
-
----
-
-Ejemplo:
-
-Billetes:
-
-```python
-[500,200,100]
-```
-
-Monto:
-
-```python
-2200
+mostrar_resumen_operaciones(operaciones)
 ```
 
 ---
 
-## Paso 1
+## Algoritmos utilizados
+
+### Bubble Sort (Ordenamiento Burbuja)
+
+Usado en `ordenar_mayor_a_menor()` y `ordenar_operaciones_mayor_a_menor()`.
+
+Compara elementos adyacentes e intercambia si están en el orden incorrecto. Repite el proceso hasta que la lista quede ordenada.
 
 ```python
-cantidad = resto // billete
+if copia[j] < copia[j + 1]:   # Para orden descendente
+    aux = copia[j]
+    copia[j] = copia[j + 1]
+    copia[j + 1] = aux
 ```
 
-Hace:
+La variable auxiliar `aux` es imprescindible para no perder el valor que se desplaza.
 
-```python
-2200 // 500
-```
+### Algoritmo Voraz (Greedy)
 
-Resultado:
+Usado en `calcular_billetes_para_monto()`.
 
-```python
-4
-```
-
-Significa:
-
-```text
-4 billetes de 500
-```
+Toma siempre la decisión localmente óptima: usar la mayor cantidad posible del billete más grande disponible antes de pasar al siguiente. Esto garantiza la menor cantidad de billetes cuando los valores de los billetes permiten una solución exacta.
 
 ---
 
-## Paso 2
+## Ejemplos de uso
 
-```python
-resto = resto % billete
+### Ejemplo del enunciado
+
+**Billetes ingresados:** 200, 500, 100  
+**Montos solicitados:** 2200, 3500, 920, 600
+
+```
+Monto $2200:
+  $500 x 4 = $2000
+  $200 x 1 = $200
+
+Monto $3500:
+  $500 x 7 = $3500
+
+Error: no es posible entregar $920 con los billetes disponibles.
+
+Monto $600:
+  $500 x 1 = $500
+  $100 x 1 = $100
 ```
 
-Hace:
+**Resumen final (ordenado de mayor a menor):**
 
-```python
-2200 % 500
 ```
+RESUMEN DE OPERACIONES
 
-Resultado:
-
-```python
-200
-```
-
-Todavía faltan entregar $200.
-
----
-
-## Paso 3
-
-```python
-200 // 200
-```
-
-Resultado:
-
-```python
-1
-```
-
-Significa:
-
-```text
-1 billete de 200
-```
-
----
-
-Resultado final:
-
-```python
-[
- [500,4],
- [200,1]
-]
-```
-
----
-
-# ¿POR QUÉ SE MINIMIZA LA CANTIDAD DE BILLETES?
-
-Porque:
-
-1. Primero se ordenan los billetes de mayor a menor.
-2. Se utiliza:
-
-```python
-cantidad = resto // billete
-```
-
-para tomar la máxima cantidad posible de billetes grandes.
-3. Luego se continúa con los billetes más pequeños.
-
----
-
-Ejemplo:
-
-Monto:
-
-```python
-2200
-```
-
-Billetes:
-
-```python
-500
-200
-100
-```
-
-Resultado:
-
-```text
-4 billetes de 500
-1 billete de 200
-```
-
-Total:
-
-```text
-5 billetes
-```
-
----
-
-# ¿POR QUÉ APARECE ERROR SI RESTO != 0?
-
-Ejemplo:
-
-Billetes:
-
-```python
-500
-200
-100
-```
-
-Monto:
-
-```python
-920
-```
-
-Proceso:
-
-```text
-500 → sobra 420
-200 → sobra 20
-100 → sobra 20
-```
-
-Queda:
-
-```python
-resto = 20
-```
-
-No existe billete de 20.
-
-Por eso:
-
-```python
-resultado = []
-```
-
-y el programa informa error.
-
----
-
-# 7. FUNCIÓN mostrar_resultado_monto()
-
-## ¿Qué hace?
-
-Muestra los billetes utilizados para un monto.
-
----
-
-Ejemplo:
-
-```python
-[
- [500,4],
- [200,1]
-]
-```
-
-Muestra:
-
-```text
-$500 x 4 = $2000
-$200 x 1 = $200
-```
-
----
-
-# 8. LISTA operaciones
-
-## ¿Qué guarda?
-
-Todas las operaciones realizadas.
-
----
-
-Ejemplo:
-
-```python
-[
- [2200, [[500,4],[200,1]]],
- [3500, [[500,7]]],
- [600, [[500,1],[100,1]]]
-]
-```
-
----
-
-## ¿Para qué sirve?
-
-Permite generar el resumen final solicitado por el enunciado.
-
----
-
-# 9. FUNCIÓN ordenar_operaciones_mayor_a_menor()
-
-## ¿Qué hace?
-
-Ordena las operaciones según el monto entregado.
-
----
-
-Ejemplo:
-
-Antes:
-
-```text
-2200
-3500
-600
-```
-
-Después:
-
-```text
-3500
-2200
-600
-```
-
----
-
-# 10. RESUMEN FINAL
-
-## ¿Qué hace?
-
-Muestra todas las operaciones realizadas.
-
----
-
-Ejemplo:
-
-```text
 Monto entregado: $3500
-$500 x 7
+  $500 x 7
 
 Monto entregado: $2200
-$500 x 4
-$200 x 1
+  $500 x 4
+  $200 x 1
 
 Monto entregado: $600
-$500 x 1
-$100 x 1
+  $500 x 1
+  $100 x 1
 ```
 
----
+El monto de $920 no aparece en el resumen porque no pudo entregarse.
 
-# POSIBLES PREGUNTAS DE DEFENSA
+### ¿Por qué $920 genera error?
 
-## CONSTANTES
+Con billetes de $500, $200 y $100:
 
-### ¿Por qué usar constantes?
+| Billete | División entera   | Resto |
+|---------|-------------------|-------|
+| $500    | 920 // 500 = 1    | 420   |
+| $200    | 420 // 200 = 2    | 20    |
+| $100    | 20 // 100 = 0     | 20    |
 
-Porque si cambia un valor, solo se modifica una línea.
-
----
-
-### ¿Qué ventajas tienen?
-
-- Mejor legibilidad.
-- Fácil mantenimiento.
-- Evitan repetir números.
+Queda un resto de $20 que no puede representarse con ningún billete disponible → error.
 
 ---
 
-## billete_en_rango()
+## Restricciones y validaciones
 
-### ¿Qué recibe?
-
-Un entero que representa un billete.
-
----
-
-### ¿Qué devuelve?
-
-- 1 → válido.
-- 0 → inválido.
-
----
-
-### ¿Por qué se usa OR?
-
-```python
-if billete < 10 or billete > 20000
-```
-
-Porque alcanza con que una condición sea verdadera para que el billete sea inválido.
+| Situación                        | Comportamiento                              |
+|----------------------------------|---------------------------------------------|
+| Billete menor a $10              | Error, se vuelve a pedir                    |
+| Billete mayor a $20000           | Error, se vuelve a pedir                    |
+| Billete ya ingresado             | Error, se vuelve a pedir                    |
+| Más de 10 billetes distintos     | Error, no se agrega                         |
+| Intentar salir sin billetes      | No se permite, se exige al menos uno        |
+| Monto igual o menor a cero       | Error, se vuelve a pedir                    |
+| Monto que no puede formarse      | Error informativo, no se registra           |
 
 ---
 
-## billete_repetido()
-
-### ¿Para qué sirve i?
-
-Para recorrer la lista.
-
----
-
-### ¿Qué hace len()?
-
-Devuelve la cantidad de elementos.
-
----
-
-### ¿Qué significa?
-
-```python
-lista_billetes[i]
-```
-
-Acceder al elemento ubicado en la posición i.
-
----
-
-## cargar_billetes()
-
-### ¿Por qué la lista comienza vacía?
-
-Porque todavía no se cargó ningún billete.
-
----
-
-### ¿Qué hace append()?
-
-Agrega un elemento al final de la lista.
-
----
-
-### ¿Por qué no alcanza con?
-
-```python
-while entrada != -1
-```
-
-Porque permitiría salir sin cargar ningún billete.
-
----
-
-## ordenar_mayor_a_menor()
-
-### ¿Qué método utiliza?
-
-Bubble Sort (Burbuja).
-
----
-
-### ¿Para qué sirve aux?
-
-Permite intercambiar valores sin perder información.
-
----
-
-### ¿Por qué ordenar de mayor a menor?
-
-Porque después se utilizan primero los billetes más grandes.
-
----
-
-## calcular_billetes_para_monto()
-
-### ¿Qué hace //?
-
-División entera.
-
-Ejemplo:
-
-```python
-2200 // 500 = 4
-```
-
----
-
-### ¿Qué hace %?
-
-Obtiene el resto.
-
-Ejemplo:
-
-```python
-2200 % 500 = 200
-```
-
----
-
-### ¿Por qué usar // y no /?
-
-Porque no existen cantidades decimales de billetes.
-
----
-
-### ¿Qué representa resultado?
-
-Ejemplo:
-
-```python
-[
- [500,4],
- [200,1]
-]
-```
-
-Significa:
-
-```text
-4 billetes de 500
-1 billete de 200
-```
-
----
-
-### ¿Por qué resto != 0 genera error?
-
-Porque quedó dinero sin poder representarse con los billetes disponibles.
-
----
-
-## operaciones
-
-### ¿Qué guarda?
-
-Todas las operaciones realizadas.
-
----
-
-### ¿Por qué se guarda?
-
-Porque el enunciado pide mostrar un resumen final.
-
----
-
-## ordenar_operaciones_mayor_a_menor()
-
-### ¿Por qué se ordenan?
-
-Porque el enunciado pide mostrar las operaciones de mayor a menor según el monto.
-
----
-
-## PROGRAMA PRINCIPAL
-
-### ¿Por qué dividir el programa en funciones?
-
-Porque:
-
-- Organiza el código.
-- Facilita las pruebas.
-- Permite reutilizar código.
-- Hace más fácil el mantenimiento.
-
----
-
-# PREGUNTA MÁS IMPORTANTE DEL TP
-
-## ¿Cómo logra el programa minimizar la cantidad de billetes?
-
-Porque:
-
-1. Ordena los billetes de mayor a menor.
-2. Utiliza:
-
-```python
-cantidad = resto // billete
-```
-
-para tomar la máxima cantidad posible de cada denominación.
-3. Continúa con el resto utilizando billetes más pequeños.
-
-De esta forma obtiene la menor cantidad posible de billetes para cada monto solicitado.
+## Consideraciones de diseño
+
+- **Separación en funciones:** cada función tiene una única responsabilidad, lo que facilita la lectura, las pruebas y el mantenimiento.
+- **Sin modificación de datos originales:** las funciones de ordenamiento trabajan sobre copias, preservando las listas originales.
+- **Historial de operaciones con copia:** al guardar cada operación, se copia el resultado para que cambios posteriores no afecten el registro.
+- **Adaptabilidad a distintas monedas:** los billetes se ingresan en tiempo de ejecución, sin valores fijos en el código.
+- **Código dentro del currículum:** el programa utiliza exclusivamente estructuras básicas — funciones, listas, bucles `while`, operadores `//` y `%` — sin `break`, `continue`, slicing ni valores booleanos literales.
