@@ -29,8 +29,7 @@ def billete_repetido(billete, lista_billetes):
 
 def lista_llena(lista_billetes):
     llena = 0
-    if len(lista_billetes) == MAXIMO_BILLETES:
-        print("Error: ya se ingresaron el maximo de", MAXIMO_BILLETES, "billetes.")
+    if len(lista_billetes) >= MAXIMO_BILLETES:
         llena = 1
     return llena
 
@@ -55,24 +54,27 @@ def cargar_billetes():
     print("Ingrese los billetes disponibles uno a uno.")
     print("Escriba -1 para terminar.")
 
-    while len(lista_billetes) < MAXIMO_BILLETES:
-        entrada = int(input("Billete: "))
+    entrada = int(input("Billete: "))
 
-        if entrada == -1:
-            if len(lista_billetes) == 0:
-                print("Debe ingresar al menos un billete.")
-            else:
-                break
+    while entrada != -1 or lista_vacia(lista_billetes) == 1:
+        if lista_llena(lista_billetes) == 1:
+            print("Se ha alcanzado el límite máximo. Finalizando carga...")
+            entrada = -1
+        elif entrada == -1 and lista_vacia(lista_billetes) == 1:
+            print("Debe ingresar al menos un billete.")
+            entrada = int(input("Billete: "))
         elif billete_en_rango(entrada) == 0:
-            continue
+            entrada = int(input("Billete: "))
         elif billete_repetido(entrada, lista_billetes) == 1:
-            continue
+            entrada = int(input("Billete: "))
         else:
             lista_billetes.append(entrada)
             print("Billete $", entrada, "agregado. Total ingresados:", len(lista_billetes))
-            if len(lista_billetes) == MAXIMO_BILLETES:
+            if lista_llena(lista_billetes) == 1:
                 print("Se ha alcanzado el límite máximo. Finalizando carga...")
-                break
+                entrada = -1
+            else:
+                entrada = int(input("Billete: "))
 
     return lista_billetes
 
@@ -144,7 +146,7 @@ def mostrar_billetes(lista_billetes):
     print("Billetes disponibles: ", end="")
     i = 0
     while i < len(lista_billetes):
-        print("$" + str(lista_billetes[i]), end="")
+        print("$", lista_billetes[i], end="")
         if i < len(lista_billetes) - 1:
             print(", ", end="")
         i = i + 1
